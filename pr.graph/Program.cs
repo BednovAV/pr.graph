@@ -12,9 +12,9 @@ namespace pr.graph
         // начальное меню
         public static void MenuCreate()
         {
-            int select = 1;
+            string select = "1";
 
-            while (select != 0)
+            while (select != "0")
             {
                 Console.Clear();
                 Console.WriteLine("Возможные действия:");
@@ -23,12 +23,12 @@ namespace pr.graph
                 Console.WriteLine("\t0. Выйти");
 
                 Console.Write("Ваш выбор: ");
-                select = int.Parse(Console.ReadLine());
+                select = Console.ReadLine();
 
 
                 switch (select)
                 {
-                    case 1:
+                    case "1":
                         Console.Write("\tОриентированный(t - true): ");
                         bool directed = (Console.ReadLine() == "t") ? true : false;
 
@@ -37,7 +37,7 @@ namespace pr.graph
 
                         MenuGraph(new Graph(directed, weighted));
                         break;
-                    case 2:
+                    case "2":
                         Console.Write("\tНазвание файла: ");
                         MenuGraph(new Graph(Console.ReadLine()));
                         break;
@@ -50,35 +50,60 @@ namespace pr.graph
         public static void MenuGraph(Graph g)
         {
             Console.Clear();
-            int select = 1;
+            string select = "1";
 
-            while (select != 0)
+            Console.WriteLine("Ориентированность - {0}", g.directed);
+            Console.WriteLine("Взвешенность - {0}", g.weighted);
+
+            Console.WriteLine("Возможные действия:");
+            Console.WriteLine("\t1. Добавить вершину");
+            if (g.directed)
             {
-                Console.WriteLine("Возможные действия:");
-                Console.WriteLine("\t1. Добавить вершину");
-                Console.WriteLine("\t2. Добавить связь");
-                Console.WriteLine("\t3. Удалить вершину");
-                Console.WriteLine("\t4. Удалить связь");
-                Console.WriteLine("\t5. Показать список смежности");
-                Console.WriteLine("\t6. Сохранить граф");
-                Console.WriteLine("\t0. Выйти");
-                
+                Console.WriteLine("\t2. Добавить дугу");
+            }
+            else
+            {
+                Console.WriteLine("\t2. Добавить ребро");
+            }
+            Console.WriteLine("\t3. Удалить вершину");
+            if (g.directed)
+            {
+                Console.WriteLine("\t4. Удалить дугу");
+            }
+            else
+            {
+                Console.WriteLine("\t4. Удалить ребро");
+            }
+            Console.WriteLine("\t5. Показать список смежности");
+            Console.WriteLine("\t6. Сохранить граф");
+            Console.WriteLine("\t0. Выйти");
 
+            while (select != "0")
+            {
                 Console.Write("Ваш выбор: ");
-                select = int.Parse(Console.ReadLine());
+                select = Console.ReadLine();
 
 
                 switch (select)
                 {
                     // добавить вершину
-                    case 1:
+                    case "1":
                         {
-                            Console.Write("\tНазвание вершины: ");
-                            g.AddVertex(Console.ReadLine());
+                            Console.Write("\tНазвание добавляемой вершины: ");
+
+                            // вершина добавляется в граф
+                            if (g.AddVertex(Console.ReadLine()))
+                            {
+                                Console.WriteLine("Вершина добавлена");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Вершина уже существует");
+                            }
                             break;
                         }
                     // добавить связь
-                    case 2:
+                    case "2":
                         {
                             if (g.directed)
                             {
@@ -93,23 +118,44 @@ namespace pr.graph
 
                             if (g.weighted)
                             {
-                                g.AddLink(link[0], link[1], int.Parse(link[2]));
+                                if (link.Length == 3)
+                                {
+                                    g.AddLink(link[0], link[1], int.Parse(link[2]));
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Неверное колличество параметров");
+                                }
                             }
                             else
                             {
-                                g.AddLink(link[0], link[1]);
+                                if (link.Length == 2)
+                                {
+                                    g.AddLink(link[0], link[1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Неверное колличество параметров");
+                                }
                             }
                             break;
                         }
                     // удалить вершину
-                    case 3:
+                    case "3":
                         {
-                            Console.Write("\tНазвание вершины: ");
-                            g.RemoveVertex(Console.ReadLine());
+                            Console.Write("\tНазвание удаляемой вершины: ");
+                            if (g.RemoveVertex(Console.ReadLine()))
+                            {
+                                Console.WriteLine("Вершина удалена");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Такой вершины нет");
+                            }
                             break;
                         }
                     // удалить связь
-                    case 4:
+                    case "4":
                         {
                             if (g.directed)
                             {
@@ -121,16 +167,35 @@ namespace pr.graph
                             }
                             string[] link = Console.ReadLine().Split();
 
-                            g.RemoveLink(link[0], link[1]);
-                            break;
+                            if (link.Length == 2)
+                            {
+                                if (g.RemoveLink(link[0], link[1]))
+                                {
+                                    Console.WriteLine("Удаление прошло успешно");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Что-то пошло не так");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Неверное колличество параметров");
+                            }
+                                break;
                         }
                     // показать список смежности
-                    case 5:
+                    case "5":
                         {
-                            ShowLinks(g);
+                            foreach (var item in g.GetLinks())
+                            {
+                                Console.WriteLine(item);
+                            }
+                            Console.WriteLine();
                             break;
                         }
-                    case 6:
+                    // сохранить граф
+                    case "6":
                         {
                             Console.Write("\tНазвание файла: ");
                             g.Save(Console.ReadLine());
@@ -142,15 +207,6 @@ namespace pr.graph
             }
         }
 
-        public static void ShowLinks(Graph g)
-        {
-            Console.WriteLine();
-            foreach (var item in g.GetLinks())
-            {
-                Console.WriteLine(item);
-            }
-            Console.WriteLine();
-        }
 
         static void Main(string[] args)
         {
