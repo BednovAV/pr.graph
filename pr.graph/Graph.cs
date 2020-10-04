@@ -228,7 +228,7 @@ namespace pr.graph
         {
             using (StreamWriter output = new StreamWriter(name))
             {
-                output.WriteLine(directed);
+                output.WriteLine("{0} {1}", directed, weighted);
 
                 List<string> v = this.GetVertices();
                 foreach (var item in v)
