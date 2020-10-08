@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -41,6 +43,14 @@ namespace pr.graph
                         Console.Write("\tНазвание файла: ");
                         MenuGraph(new Graph(Console.ReadLine()));
                         break;
+                    case "3":
+                        using (StreamReader input = new StreamReader("gr.xml"))
+                        {
+                            var reader = new System.Xml.Serialization.XmlSerializer(typeof(Graph));
+                            MenuGraph((Graph)reader.Deserialize(input));
+                        }
+                        break;
+
                     default:
                         break;
                 }
@@ -120,6 +130,16 @@ namespace pr.graph
                             {
                                 if (link.Length == 3)
                                 {
+                                    if (!g.ContainsVertex(link[0]))
+                                    {
+                                        Console.WriteLine("Вершина {0} добавлена", link[0]);
+                                    }
+
+                                    if (!g.ContainsVertex(link[1]))
+                                    {
+                                        Console.WriteLine("Вершина {0} добавлена", link[1]);
+                                    }
+
                                     g.AddLink(link[0], link[1], int.Parse(link[2]));
                                 }
                                 else
@@ -131,6 +151,15 @@ namespace pr.graph
                             {
                                 if (link.Length == 2)
                                 {
+                                    if (!g.ContainsVertex(link[0]))
+                                    {
+                                        Console.WriteLine("Вершина {0} добавлена", link[0]);
+                                    }
+
+                                    if (!g.ContainsVertex(link[1]))
+                                    {
+                                        Console.WriteLine("Вершина {0} добавлена", link[1]);
+                                    }
                                     g.AddLink(link[0], link[1]);
                                 }
                                 else
@@ -187,7 +216,7 @@ namespace pr.graph
                     // показать список смежности
                     case "5":
                         {
-                            foreach (var item in g.GetLinks())
+                            foreach (var item in g.LinkList())
                             {
                                 Console.WriteLine(item);
                             }
@@ -199,6 +228,15 @@ namespace pr.graph
                         {
                             Console.Write("\tНазвание файла: ");
                             g.Save(Console.ReadLine());
+                            break;
+                        }
+                    case "7":
+                        {
+                            using (StreamWriter output = new StreamWriter("gr.xml"))
+                            {
+                                var writer = new System.Xml.Serialization.XmlSerializer(typeof(Graph));
+                                writer.Serialize(output, g);
+                            }
                             break;
                         }
                     default:

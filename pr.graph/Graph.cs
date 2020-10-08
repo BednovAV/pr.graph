@@ -9,8 +9,10 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace pr.graph
 {
+    [Serializable]
     public class Graph
     {
+        [Serializable]
         private class Link // ребро(дуга)
         {
             public string connectedVertex;
@@ -31,8 +33,17 @@ namespace pr.graph
         // флаг отвечающий за взвешенность графа
         public readonly bool weighted;
 
+
+
         //конструктор пустого графа
-        public Graph(bool directed = false, bool weighted = false)
+        public Graph()
+        {
+            vertices = new Dictionary<string, List<Link>>();
+            this.directed = false;
+            this.weighted = false;
+        }
+
+        public Graph(bool directed, bool weighted)
         {
             vertices = new Dictionary<string, List<Link>>();
             this.directed = directed;
@@ -52,9 +63,10 @@ namespace pr.graph
                 str = input.ReadLine().Split();
                 directed = (str[0] == "True") ? true : false;
                 weighted = (str[1] == "True") ? true : false;
-                
+
                 // считывание и заполнение списка вершин
-                str = input.ReadLine().Split();
+                char[] sep = new char[]{ ' '};
+                str = input.ReadLine().Split(sep , StringSplitOptions.RemoveEmptyEntries);
                 foreach (var item in str)
                 {
                     AddVertex(item);
@@ -62,7 +74,7 @@ namespace pr.graph
 
                 // считывание и заполнение списка ребер(дуг)
                 string pair;
-                while ((pair = input.ReadLine()) != null)
+                while ((pair = input.ReadLine()) != "" && pair != null)
                 {
                     str = pair.Split();
                     if (weighted)
@@ -216,7 +228,35 @@ namespace pr.graph
             return lines;
         }
 
-        
+        public List<string> LinkList()
+        {
+            List<string> result = new List<string>();
+
+            foreach (var v in vertices)
+            {
+                string element = string.Format("{0}: ", v.Key);
+                foreach (var e in v.Value)
+                {
+                    if (weighted)
+                    {
+                        element += string.Format("{0}, {1}; ", e.connectedVertex, e.weight);
+                    }
+                    else
+                    {
+                        element += string.Format("{0}; ", e.connectedVertex);
+                    }
+                }
+
+                result.Add(element);
+            }
+
+            return result;
+        }
+
+        public bool ContainsVertex(string v)
+        {
+            return vertices.ContainsKey(v);
+        }
 
         public void Save(string name)
         {
