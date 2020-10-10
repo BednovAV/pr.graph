@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -43,14 +42,6 @@ namespace pr.graph
                         Console.Write("\tНазвание файла: ");
                         MenuGraph(new Graph(Console.ReadLine()));
                         break;
-                    case "3":
-                        using (StreamReader input = new StreamReader("gr.xml"))
-                        {
-                            var reader = new System.Xml.Serialization.XmlSerializer(typeof(Graph));
-                            MenuGraph((Graph)reader.Deserialize(input));
-                        }
-                        break;
-
                     default:
                         break;
                 }
@@ -86,6 +77,7 @@ namespace pr.graph
             }
             Console.WriteLine("\t5. Показать список смежности");
             Console.WriteLine("\t6. Сохранить граф");
+            Console.WriteLine("\t7. Вывести все вершины графа, не смежные с данной");
             Console.WriteLine("\t0. Выйти");
 
             while (select != "0")
@@ -232,10 +224,10 @@ namespace pr.graph
                         }
                     case "7":
                         {
-                            using (StreamWriter output = new StreamWriter("gr.xml"))
+                            Console.Write("\tВершина: ");
+                            foreach (var item in g.NotAdjacent(Console.ReadLine()))
                             {
-                                var writer = new System.Xml.Serialization.XmlSerializer(typeof(Graph));
-                                writer.Serialize(output, g);
+                                Console.Write($"{item} ");
                             }
                             break;
                         }

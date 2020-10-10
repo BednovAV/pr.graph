@@ -9,10 +9,8 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace pr.graph
 {
-    [Serializable]
     public class Graph
     {
-        [Serializable]
         private class Link // ребро(дуга)
         {
             public string connectedVertex;
@@ -27,7 +25,7 @@ namespace pr.graph
         }
 
         // словарь вершин, ключ - название вершины, значение - список смежных вершин 
-        private Dictionary<string, List<Link>> vertices;
+        private Dictionary<string, HashSet<Link>> vertices;
         // флаг отвечающий за ориентированность графа
         public readonly bool directed;
         // флаг отвечающий за взвешенность графа
@@ -38,14 +36,14 @@ namespace pr.graph
         //конструктор пустого графа
         public Graph()
         {
-            vertices = new Dictionary<string, List<Link>>();
+            vertices = new Dictionary<string, HashSet<Link>>();
             this.directed = false;
             this.weighted = false;
         }
 
         public Graph(bool directed, bool weighted)
         {
-            vertices = new Dictionary<string, List<Link>>();
+            vertices = new Dictionary<string, HashSet<Link>>();
             this.directed = directed;
             this.weighted = weighted;
         }
@@ -53,7 +51,7 @@ namespace pr.graph
         //конструктор, заполняющий данные графа из файла
         public Graph(string inputName)
         {
-            vertices = new Dictionary<string, List<Link>>();
+            vertices = new Dictionary<string, HashSet<Link>>();
 
             using (StreamReader input = new StreamReader(inputName))
             {
@@ -93,7 +91,7 @@ namespace pr.graph
         public Graph(Graph g)
         {
             // создания пустого словаря вершин
-            vertices = new Dictionary<string, List<Link>>();
+            vertices = new Dictionary<string, HashSet<Link>>();
 
             // копирование параметров графа
             directed = g.directed;
@@ -123,7 +121,7 @@ namespace pr.graph
             }
             else
             {
-                vertices.Add(name, new List<Link>());
+                vertices.Add(name, new HashSet<Link>());
                 return true;
             }
         }
@@ -142,13 +140,13 @@ namespace pr.graph
             }
 
             // если в графе уже была добавляемая связь, то она будет удалена и добавлена заново
-            vertices[v1].RemoveAll(e => e.connectedVertex == v2);
+            vertices[v1].RemoveWhere(e => e.connectedVertex == v2);
             vertices[v1].Add(new Link(v2, weight));
             
             // если граф неориентированный, то связь будет двусторонней
             if (!directed)
             {
-                vertices[v2].RemoveAll(e => e.connectedVertex == v1);
+                vertices[v2].RemoveWhere(e => e.connectedVertex == v1);
                 vertices[v2].Add(new Link(v1, weight));
             }
         }
@@ -159,7 +157,7 @@ namespace pr.graph
         {
             foreach (var v in vertices)
             {
-                v.Value.RemoveAll(e => e.connectedVertex == vertex);
+                v.Value.RemoveWhere(e => e.connectedVertex == vertex);
             }
 
             return vertices.Remove(vertex);
@@ -180,13 +178,13 @@ namespace pr.graph
 
         private bool RemoveEdge(string v1, string v2)
         {
-            return vertices[v1].RemoveAll(e => e.connectedVertex == v2) == 1
-                && vertices[v2].RemoveAll(e => e.connectedVertex == v1) == 1;
+            return vertices[v1].RemoveWhere(e => e.connectedVertex == v2) == 1
+                && vertices[v2].RemoveWhere(e => e.connectedVertex == v1) == 1;
         }
 
         private bool RemoveArrow(string v1, string v2)
         {
-            return vertices[v1].RemoveAll(e => e.connectedVertex == v2) == 1;
+            return vertices[v1].RemoveWhere(e => e.connectedVertex == v2) == 1;
         }
 
 
@@ -280,6 +278,14 @@ namespace pr.graph
                     output.WriteLine(item);
                 }
             }
+        }
+
+        // 15. Вывести все вершины графа, не смежные с данной.
+        public IEnumerable<string> NotAdjacent(string v)
+        {
+            HashSet<Link> result = new HashSet<Link>(vertices[v]);
+            result.ExceptWith(vertices.Keys);
+            return result;
         }
 
         
