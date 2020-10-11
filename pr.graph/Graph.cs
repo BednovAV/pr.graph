@@ -280,14 +280,29 @@ namespace pr.graph
             }
         }
 
-        // 15. Вывести все вершины графа, не смежные с данной.
-        public IEnumerable<string> NotAdjacent(string v)
+        public IEnumerable<string> Adjacent(string v)
         {
-            HashSet<Link> result = new HashSet<Link>(vertices[v]);
-            result.ExceptWith(vertices.Keys);
+            List<string> result = new List<string>();
+
+            foreach (var item in vertices[v])
+            {
+                result.Add(item.connectedVertex);
+            }
+
             return result;
         }
 
-        
+        // 15. Вывести все вершины графа, не смежные с данной.
+        public IEnumerable<string> NotAdjacent(string v)
+        {
+            return vertices.Keys.Except(Adjacent(v));
+        }
+
+        // 18. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину.
+        public IEnumerable<string> Task18(string u, string v)
+        {
+            return Adjacent(u).Except(Adjacent(v));
+        }
+
     }
 }

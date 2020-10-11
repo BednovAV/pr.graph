@@ -78,6 +78,7 @@ namespace pr.graph
             Console.WriteLine("\t5. Показать список смежности");
             Console.WriteLine("\t6. Сохранить граф");
             Console.WriteLine("\t7. Вывести все вершины графа, не смежные с данной");
+            Console.WriteLine("\t8. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину.");
             Console.WriteLine("\t0. Выйти");
 
             while (select != "0")
@@ -229,6 +230,21 @@ namespace pr.graph
                             {
                                 Console.Write($"{item} ");
                             }
+                            Console.WriteLine();
+                            break;
+                        }
+                    case "8":
+                        {
+                            Console.Write("\tВершина u: ");
+                            string u = Console.ReadLine();
+                            Console.Write("\tВершина v: ");
+                            string v = Console.ReadLine();
+
+                            foreach (var item in g.Task18(u, v))
+                            {
+                                Console.Write($"{item} ");
+                            }
+                            Console.WriteLine();
                             break;
                         }
                     default:
