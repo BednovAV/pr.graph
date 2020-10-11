@@ -78,7 +78,9 @@ namespace pr.graph
             Console.WriteLine("\t5. Показать список смежности");
             Console.WriteLine("\t6. Сохранить граф");
             Console.WriteLine("\t7. Вывести все вершины графа, не смежные с данной");
-            Console.WriteLine("\t8. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину.");
+            Console.WriteLine("\t8. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину");
+            Console.WriteLine("\t9. Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута)");
+            
             Console.WriteLine("\t0. Выйти");
 
             while (select != "0")
@@ -245,6 +247,16 @@ namespace pr.graph
                                 Console.Write($"{item} ");
                             }
                             Console.WriteLine();
+                            break;
+                        }
+                    case "9":
+                        {
+                            if (!g.directed)
+                            {
+                                Console.WriteLine("Граф должен быть ориентированным.");
+                                break;
+                            }
+                            MenuGraph(g.Reversed());
                             break;
                         }
                     default:

@@ -280,6 +280,7 @@ namespace pr.graph
             }
         }
 
+        // Возвращает вершинны смежные с данной
         public IEnumerable<string> Adjacent(string v)
         {
             List<string> result = new List<string>();
@@ -302,6 +303,39 @@ namespace pr.graph
         public IEnumerable<string> Task18(string u, string v)
         {
             return Adjacent(u).Except(Adjacent(v));
+        }
+
+        //4. Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута).
+        public Graph Reversed()
+        {
+            if (!directed)
+            {
+                throw new Exception("Данная операция не поддерживается для неориентировннного графа");
+            }
+
+            Graph result = new Graph(directed, weighted);
+
+            // все вершины исходного графа копируются в реверсивный
+            foreach (var item in vertices.Keys)
+            {
+                result.AddVertex(item);
+            }
+
+            // обращение каждой дуги исходного графа и добавление в реверсивный
+            foreach (var item in GetLinks())
+            {
+                string[] arrow = item.Split();
+                if (weighted)
+                {
+                    result.AddLink(arrow[1], arrow[0], int.Parse(arrow[2]));
+                }
+                else
+                {
+                    result.AddLink(arrow[1], arrow[0]);
+                }
+            }
+
+            return result;
         }
 
     }
