@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
 using System.Diagnostics.Eventing.Reader;
+using System.ComponentModel;
 
 namespace pr.graph
 {
@@ -334,8 +335,44 @@ namespace pr.graph
                     result.AddLink(arrow[1], arrow[0]);
                 }
             }
-
             return result;
+        }
+
+
+        //
+        public void Dfs(string v, Dictionary<string, bool> visited, ref int t)
+        {
+            visited[v] = true;
+
+            foreach (var item in vertices[v])
+            {
+                if(!visited[item.connectedVertex])
+                {
+                    Dfs(item.connectedVertex, visited, ref t);
+                }
+            }
+        }
+
+        public void Kosaraju()
+        {
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            foreach (var item in vertices.Keys)
+            {
+                visited.Add(item, false);
+            }
+
+            Dictionary<string, int> tout = new Dictionary<string, int>();
+            foreach (var item in vertices.Keys)
+            {
+                tout.Add(item, 0);
+            }
+
+            foreach (var item in vertices.Keys)
+            {
+                int t = 0;
+                Dfs(item, visited, ref t);
+                tout[item] = t;
+            }
         }
 
     }
