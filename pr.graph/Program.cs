@@ -259,6 +259,11 @@ namespace pr.graph
                             MenuGraph(g.Reversed());
                             break;
                         }
+                    case "10":
+                        {
+                            g.Kosaraju();
+                            break;
+                        }
                     default:
                         break;
                 }

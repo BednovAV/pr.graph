@@ -340,7 +340,7 @@ namespace pr.graph
 
 
         //
-        public void Dfs(string v, Dictionary<string, bool> visited, ref int t)
+        public void Dfs(string v, Dictionary<string, bool> visited, Dictionary<string, int> tout, ref int t)
         {
             visited[v] = true;
 
@@ -348,9 +348,11 @@ namespace pr.graph
             {
                 if(!visited[item.connectedVertex])
                 {
-                    Dfs(item.connectedVertex, visited, ref t);
+                    t++;
+                    Dfs(item.connectedVertex, visited, tout, ref t);
                 }
             }
+            tout[v] = t;
         }
 
         public void Kosaraju()
@@ -367,11 +369,14 @@ namespace pr.graph
                 tout.Add(item, 0);
             }
 
-            foreach (var item in vertices.Keys)
+            int t = 0;
+
+            Dfs(GetVertices()[0], visited, tout, ref t);
+
+
+            foreach (var item in tout)
             {
-                int t = 0;
-                Dfs(item, visited, ref t);
-                tout[item] = t;
+                Console.WriteLine($"{item.Key} {item.Value}");
             }
         }
 
