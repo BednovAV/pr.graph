@@ -339,7 +339,7 @@ namespace pr.graph
         }
 
 
-        // I.16. Найти сильно связные компоненты орграфа.
+        // II.16. Найти сильно связные компоненты орграфа.
 
         // первый обход в глубину для алгоритма Косарайю для подсчета времени выхода из вершин
         private void Dfs1(string v, Dictionary<string, bool> visited, Dictionary<string, int> tout, ref int t)
