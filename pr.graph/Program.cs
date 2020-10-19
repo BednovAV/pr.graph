@@ -80,7 +80,9 @@ namespace pr.graph
             Console.WriteLine("\t7. Вывести все вершины графа, не смежные с данной");
             Console.WriteLine("\t8. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину");
             Console.WriteLine("\t9. Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута)");
-            
+            Console.WriteLine("\t10. Найти сильно связные компоненты орграфa");
+
+
             Console.WriteLine("\t0. Выйти");
 
             while (select != "0")
@@ -225,6 +227,7 @@ namespace pr.graph
                             g.Save(Console.ReadLine());
                             break;
                         }
+                    // Вывести все вершины графа, не смежные с данной
                     case "7":
                         {
                             Console.Write("\tВершина: ");
@@ -235,6 +238,7 @@ namespace pr.graph
                             Console.WriteLine();
                             break;
                         }
+                    // Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину
                     case "8":
                         {
                             Console.Write("\tВершина u: ");
@@ -249,6 +253,7 @@ namespace pr.graph
                             Console.WriteLine();
                             break;
                         }
+                    // Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута)
                     case "9":
                         {
                             if (!g.directed)
@@ -259,9 +264,30 @@ namespace pr.graph
                             MenuGraph(g.Reversed());
                             break;
                         }
+                    // Найти сильно связные компоненты орграфа
                     case "10":
                         {
-                            g.Kosaraju();
+                            if (!g.directed)
+                            {
+                                Console.WriteLine("Граф должен быть ориентированным.");
+                                break;
+                            }
+                            else
+                            {
+                                List<List<string>> components = g.Kosaraju();
+
+                                Console.WriteLine("Сильное связанные компоненты орграфа");
+                                foreach (var comp in components)
+                                {
+                                    Console.Write("{");
+                                    foreach (var ver in comp)
+                                    {
+                                        Console.Write($"{ver} ");
+                                    }
+                                    Console.WriteLine("}");
+                                }
+                            }
+                            
                             break;
                         }
                     default:

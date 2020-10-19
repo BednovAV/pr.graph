@@ -294,19 +294,19 @@ namespace pr.graph
             return result;
         }
 
-        // 15. Вывести все вершины графа, не смежные с данной.
+        // Ia.15. Вывести все вершины графа, не смежные с данной.
         public IEnumerable<string> NotAdjacent(string v)
         {
             return vertices.Keys.Except(Adjacent(v));
         }
 
-        // 18. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину.
+        // Ia.18. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину.
         public IEnumerable<string> Task18(string u, string v)
         {
             return Adjacent(u).Except(Adjacent(v));
         }
 
-        //4. Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута).
+        // Ib.4. Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута).
         public Graph Reversed()
         {
             if (!directed)
@@ -339,8 +339,10 @@ namespace pr.graph
         }
 
 
-        //
-        public void Dfs(string v, Dictionary<string, bool> visited, Dictionary<string, int> tout, ref int t)
+        // I.16. Найти сильно связные компоненты орграфа.
+
+        // первый обход в глубину для алгоритма Косарайю для подсчета времени выхода из вершин
+        private void Dfs1(string v, Dictionary<string, bool> visited, Dictionary<string, int> tout, ref int t)
         {
             visited[v] = true;
 
@@ -349,35 +351,88 @@ namespace pr.graph
                 if(!visited[item.connectedVertex])
                 {
                     t++;
-                    Dfs(item.connectedVertex, visited, tout, ref t);
+                    Dfs1(item.connectedVertex, visited, tout, ref t);
                 }
             }
             tout[v] = t;
+            t++;
         }
 
-        public void Kosaraju()
+        // второй обход в глубину для алгоритма Косарайю для заполнения списка компонент связанности 
+        private void Dfs2(Graph gr, string v, Dictionary<string, bool> visited, List<string> component, HashSet<string> entries)
         {
+            visited[v] = true;
+            component.Add(v);
+            entries.Add(v);
+            foreach (var item in gr.vertices[v])
+            {
+                if (!visited[item.connectedVertex])
+                {
+                    Dfs2(gr, item.connectedVertex, visited, component, entries);
+                }
+            }
+        }
+
+        // Алгоритм Косарайю для поиска сильно связанных компонент орграфа
+        public List<List<string>> Kosaraju()
+        {
+                   
+            // создание и инициализация словаря посещенных вершин для обходов в глубину
             Dictionary<string, bool> visited = new Dictionary<string, bool>();
             foreach (var item in vertices.Keys)
             {
                 visited.Add(item, false);
             }
 
+            // создание и инициализация словаря для времён выхода из вершин
             Dictionary<string, int> tout = new Dictionary<string, int>();
             foreach (var item in vertices.Keys)
             {
                 tout.Add(item, 0);
             }
 
+            // таймер для подсчета времени
             int t = 0;
 
-            Dfs(GetVertices()[0], visited, tout, ref t);
-
-
-            foreach (var item in tout)
+            // серия обходов в глубину для заполнения словаря времен выхода 
+            foreach (var item in vertices.Keys)
             {
-                Console.WriteLine($"{item.Key} {item.Value}");
+                if (!visited[item])
+                {
+                    Dfs1(item, visited, tout, ref t);
+                }
             }
+
+            // обнуление словаря посещенных вершин
+            foreach (var item in vertices.Keys)
+            {
+                visited[item] = false;
+            }
+
+            // множество вершин уже добавленных в компоненты связанности
+            HashSet<string> entries = new HashSet<string>();
+
+            // инвертированный орграф
+            Graph gr = Reversed();
+
+            // список сильно связанных компонент
+            List<List<string>> result = new List<List<string>>();
+
+            // цикл по отсортированному словарю времен выхода (по убыванию времени)
+            foreach (var item in tout.OrderByDescending(e => e.Value))
+            {
+                // если вершина не принадлежит в какой-либо компоненте связанности, 
+                // то создаем новую компоненту, запускаем обход в глубиину и 
+                // добавляем эту компоненту в список сильно связанных компонент
+                if(!entries.Contains(item.Key))
+                {
+                    List<string> component = new List<string>();
+                    Dfs2(gr, item.Key, visited, component, entries);
+                    result.Add(component);
+                }
+            }
+
+            return result;
         }
 
     }
