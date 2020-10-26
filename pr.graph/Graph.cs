@@ -128,7 +128,7 @@ namespace pr.graph
         }
 
         // метод добавляющий связь в граф
-        public void AddLink(string v1, string v2, int weight = 0)
+        public void AddLink(string v1, string v2, int weight = 1)
         {
             // если в графе отсутствует какая-то из вершин, то она будет добавлена
             if (!vertices.ContainsKey(v1))
@@ -434,6 +434,89 @@ namespace pr.graph
 
             return result;
         }
+
+        // II.30. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.
+        public Dictionary<string, int> TaskII_30(string u)
+        {
+            Dictionary<string, Dictionary<string, int>> tab = Floyd();
+
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            foreach (var v in vertices.Keys)
+            {
+                result[v] = tab[v][u];
+            }
+
+
+            //foreach (var i in vertices.Keys)
+            //{
+            //    foreach (var j in vertices.Keys)
+            //    {
+            //        Console.WriteLine($"{i}, {j}: {tab[i][j]}");
+            //    }
+            //}
+
+            return result;
+        }
+
+        private Graph Unweighing()
+        {
+            Graph result = new Graph(directed, false);
+
+            foreach (var item in vertices.Keys)
+            {
+                result.AddVertex(item);
+            }
+
+            foreach (var item in GetLinks())
+            {
+                string[] arrow = item.Split();
+
+                result.AddLink(arrow[0], arrow[1]);
+            }
+            return result;
+        }
+
+        private Dictionary<string, Dictionary<string, int>> Floyd()
+        {
+            Dictionary<string, Dictionary<string, int>> g = new Dictionary<string, Dictionary<string, int>>();
+
+            foreach (var i in vertices.Keys)
+            {
+                g.Add(i, new Dictionary<string, int>());
+
+                // заполнение несмежных вершин
+                foreach (var j in NotAdjacent(i))
+                {
+                    g[i].Add(j, 100);
+                }
+
+                //заполнение смежных вершин
+                foreach (var j in vertices[i])
+                {
+                    g[i].Add(j.connectedVertex, 1);
+                }              
+            }
+
+            foreach (var i in vertices.Keys)
+            {
+                foreach (var j in vertices.Keys)
+                {
+                    foreach (var k in vertices.Keys)
+                    {
+                        if (g[j][k] > g[j][i] + g[i][k])
+                        {
+                            g[j][k] = g[j][i] + g[i][k];
+                        }
+                    }
+                }
+            }
+
+
+
+
+            return g;
+        }
+        
 
     }
 }

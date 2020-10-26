@@ -81,6 +81,7 @@ namespace pr.graph
             Console.WriteLine("\t8. Определить, существует ли вершина, в которую есть дуга из вершины u, но нет из v. Вывести такую вершину");
             Console.WriteLine("\t9. Построить орграф, являющийся обращением данного орграфа (каждая дуга перевёрнута)");
             Console.WriteLine("\t10. Найти сильно связные компоненты орграфa");
+            Console.WriteLine("\t11. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.");
 
 
             Console.WriteLine("\t0. Выйти");
@@ -290,7 +291,19 @@ namespace pr.graph
                             
                             break;
                         }
-                    default:
+                    // Вывести длины кратчайших(по числу рёбер) путей от всех вершин до u.
+                    case "11":
+                        {
+                            Console.Write("u: ");
+
+                            foreach (var item in g.TaskII_30(Console.ReadLine()))
+                            {
+                                Console.WriteLine($"{item.Key}: {item.Value}");
+                            }
+
+                            break;
+                        }
+                            default:
                         break;
                 }
             }
