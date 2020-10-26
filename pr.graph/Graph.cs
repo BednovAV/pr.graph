@@ -438,8 +438,10 @@ namespace pr.graph
         // II.30. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.
         public Dictionary<string, int> TaskII_30(string u)
         {
+            // таблица кратчайших расстояний графа(по числу ребер)
             Dictionary<string, Dictionary<string, int>> tab = Floyd();
 
+            // заполнение кратчайших расстояний для u
             Dictionary<string, int> result = new Dictionary<string, int>();
             foreach (var v in vertices.Keys)
             {
@@ -458,28 +460,11 @@ namespace pr.graph
             return result;
         }
 
-        private Graph Unweighing()
-        {
-            Graph result = new Graph(directed, false);
-
-            foreach (var item in vertices.Keys)
-            {
-                result.AddVertex(item);
-            }
-
-            foreach (var item in GetLinks())
-            {
-                string[] arrow = item.Split();
-
-                result.AddLink(arrow[0], arrow[1]);
-            }
-            return result;
-        }
-
+        // алгоритм Флойда-Уоршелла по нахождению кратчайших расстояний (по количеству ребер) в графе
         private Dictionary<string, Dictionary<string, int>> Floyd()
         {
+            // создание и заполнение таблицы смежности графа
             Dictionary<string, Dictionary<string, int>> g = new Dictionary<string, Dictionary<string, int>>();
-
             foreach (var i in vertices.Keys)
             {
                 g.Add(i, new Dictionary<string, int>());
@@ -487,7 +472,7 @@ namespace pr.graph
                 // заполнение несмежных вершин
                 foreach (var j in NotAdjacent(i))
                 {
-                    g[i].Add(j, 100);
+                    g[i].Add(j, 1000);
                 }
 
                 //заполнение смежных вершин
@@ -497,6 +482,7 @@ namespace pr.graph
                 }              
             }
 
+            // вычисление гратчайших расстояний
             foreach (var i in vertices.Keys)
             {
                 foreach (var j in vertices.Keys)
