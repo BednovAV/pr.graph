@@ -296,7 +296,7 @@ namespace pr.graph
                         {
                             Console.Write("u: ");
 
-                            foreach (var item in g.TaskII_30(Console.ReadLine()))
+                            foreach (var item in g.TaskII_30(Console.ReadLine()).OrderBy(v => v.Key))
                             {
                                 if (item.Value != 1000)
                                 {

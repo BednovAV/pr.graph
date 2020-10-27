@@ -438,24 +438,40 @@ namespace pr.graph
         // II.30. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.
         public Dictionary<string, int> TaskII_30(string u)
         {
-            // таблица кратчайших расстояний графа(по числу ребер)
-            Dictionary<string, Dictionary<string, int>> tab = Floyd();
+            Graph gr = Reversed();
+            return gr.BfsLengh(u);
+        }
 
-            // заполнение кратчайших расстояний для u
-            Dictionary<string, int> result = new Dictionary<string, int>();
-            foreach (var v in vertices.Keys)
+        private Dictionary<string, int> BfsLengh(string v)
+        {
+
+            // создание и инициализация словаря посещенных вершин для обходов в глубину
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            foreach (var item in vertices.Keys)
             {
-                result[v] = tab[v][u];
+                visited.Add(item, false);
             }
 
+            Dictionary<string, int> result = new Dictionary<string, int>();
 
-            //foreach (var i in vertices.Keys)
-            //{
-            //    foreach (var j in vertices.Keys)
-            //    {
-            //        Console.WriteLine($"{i}, {j}: {tab[i][j]}");
-            //    }
-            //}
+
+            visited[v] = true;
+            result[v] = 0;
+            Queue<string> queue = new Queue<string>();
+            queue.Enqueue(v);
+            while (queue.Count != 0)
+            {
+                v = queue.Dequeue();
+                foreach (var ver in vertices[v])
+                {
+                    if (!visited[ver.connectedVertex])
+                    {
+                        queue.Enqueue(ver.connectedVertex);
+                        result[ver.connectedVertex] = result[v] + 1;
+                        visited[ver.connectedVertex] = true;
+                    }
+                }
+            }
 
             return result;
         }
