@@ -435,6 +435,7 @@ namespace pr.graph
             return result;
         }
 
+
         // II.30. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.
         public Dictionary<string, int> TaskII_30(string u)
         {
