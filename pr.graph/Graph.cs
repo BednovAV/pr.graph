@@ -453,18 +453,25 @@ namespace pr.graph
                 visited.Add(item, false);
             }
 
+            // словарь для длин путей
             Dictionary<string, int> result = new Dictionary<string, int>();
 
+            // очередь для обхода в ширину
+            Queue<string> queue = new Queue<string>();
 
+            // отмечаем начальную вершину как посещенную и добавляем ее в очередь
             visited[v] = true;
             result[v] = 0;
-            Queue<string> queue = new Queue<string>();
             queue.Enqueue(v);
+
+            // просмотр очереди
             while (queue.Count != 0)
             {
                 v = queue.Dequeue();
+                // смотрим вершины смежные с текущей
                 foreach (var ver in vertices[v])
                 {
+                    // если вершина не посещена, то добавляем ее в очередь и считаем путь к ней
                     if (!visited[ver.connectedVertex])
                     {
                         queue.Enqueue(ver.connectedVertex);
@@ -536,6 +543,7 @@ namespace pr.graph
                 }
             }
 
+            // создание и инициализация деревьев
             Dictionary<string, int> treeId = new Dictionary<string, int>();
             int id = 0;
             foreach (var ver in vertices.Keys)
@@ -543,16 +551,20 @@ namespace pr.graph
                 treeId[ver] = id++;
             }
 
+            // подграф для каркаса минимального веса
             Graph f = new Graph(directed, weighted);
+            // идем по отсортированному в порядке возрастания веса словарю ребер
             foreach (var edge in edges.OrderBy(e => e.Value))
             {
-                string start = edge.Key.Key;
-                string end = edge.Key.Value;
+                string start = edge.Key.Key;// начальная вершина
+                string end = edge.Key.Value;// конечная
 
+                // если вершины ребра из разных поддеревьев, то добавляем их в каркас
                 if (treeId[start] != treeId[end])
                 {
                     f.AddLink(start, end, edge.Value);
 
+                    // обьединение поддеревьев
                     int oldId = treeId[end];
                     foreach (var ver in vertices.Keys)
                     {

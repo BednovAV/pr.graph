@@ -299,16 +299,9 @@ namespace pr.graph
 
                             foreach (var item in g.TaskII_30(Console.ReadLine()).OrderBy(v => v.Key))
                             {
-                                if (item.Value != 1000)
-                                {
-                                    Console.WriteLine($"{item.Key}: {item.Value}");
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"{item.Key}: -");
-                                }
-                            }
 
+                                Console.WriteLine($"{item.Key}: {item.Value}");
+                            }    
                             break;
                         }
                     // Найти каркас минимального веса
