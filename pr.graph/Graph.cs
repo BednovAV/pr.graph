@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Diagnostics.Eventing.Reader;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace pr.graph
 {
@@ -513,12 +514,62 @@ namespace pr.graph
                 }
             }
 
-
-
-
             return g;
         }
-        
+
+        // III.Краскал Дан взвешенный неориентированный граф из N вершин и M ребер. Требуется найти в нем каркас минимального веса.
+
+        public List<string> Kruskal()
+        {
+            // словарь ребер
+            Dictionary<KeyValuePair<string, string>, int> edges = new Dictionary<KeyValuePair<string, string>, int>();
+            foreach (var ver in vertices.Keys)
+            {
+                foreach (var edg in vertices[ver])
+                {
+                    // проверка на вхождение в словарь обратного ребра
+                    KeyValuePair<string, string> pair = new KeyValuePair<string, string>(edg.connectedVertex, ver);
+                    if (!edges.ContainsKey(pair))
+                    {
+                        edges.Add(new KeyValuePair<string, string>(ver, edg.connectedVertex), edg.weight);
+                    }
+                }
+            }
+
+            Dictionary<string, int> treeId = new Dictionary<string, int>();
+            int id = 0;
+            foreach (var ver in vertices.Keys)
+            {
+                treeId[ver] = id++;
+            }
+
+            Graph f = new Graph(directed, weighted);
+            foreach (var edge in edges.OrderBy(e => e.Value))
+            {
+                string start = edge.Key.Key;
+                string end = edge.Key.Value;
+
+                if (treeId[start] != treeId[end])
+                {
+                    f.AddLink(start, end, edge.Value);
+
+                    int oldId = treeId[end];
+                    foreach (var ver in vertices.Keys)
+                    {
+                        if (treeId[ver] == oldId)
+                        {
+                            treeId[ver] = treeId[start];
+                        }
+                    }
+                }
+            }
+
+            //foreach (var item in edges)
+            //{
+            //    Console.WriteLine($"{item.Key.Key} {item.Key.Value} {item.Value}");
+            //}
+            return f.LinkList();
+        }
 
     }
 }
