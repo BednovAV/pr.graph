@@ -83,6 +83,7 @@ namespace pr.graph
             Console.WriteLine("\t10. Найти сильно связные компоненты орграфa");
             Console.WriteLine("\t11. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.");
             Console.WriteLine("\t12. Найти каркас минимального веса");
+            Console.WriteLine("\t13. Вывести все кратчайшие пути до вершины u.");
 
 
             Console.WriteLine("\t0. Выйти");
@@ -309,6 +310,17 @@ namespace pr.graph
                         {
                             Console.WriteLine("Каркас минимального веса:");
                             foreach (var item in g.Kruskal())
+                            {
+                                Console.WriteLine($"\t{item}");
+                            }
+                            Console.WriteLine();
+                            break;
+                        }
+                    // Вывести все кратчайшие пути до вершины u.
+                    case "13":
+                        {
+                            Console.Write("u:");
+                            foreach (var item in g.TaskIVa_16(Console.ReadLine()))
                             {
                                 Console.WriteLine($"\t{item}");
                             }

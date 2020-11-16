@@ -524,10 +524,10 @@ namespace pr.graph
             return g;
         }
 
-        // III.Краскал Дан взвешенный неориентированный граф из N вершин и M ребер. Требуется найти в нем каркас минимального веса.
 
+        // III.Краскал Дан взвешенный неориентированный граф из N вершин и M ребер. Требуется найти в нем каркас минимального веса.
         public List<string> Kruskal()
-        {// добавить 
+        {// добавить лес дерево
             // словарь ребер
             Dictionary<KeyValuePair<string, string>, int> edges = new Dictionary<KeyValuePair<string, string>, int>();
             foreach (var ver in vertices.Keys)
@@ -576,12 +576,117 @@ namespace pr.graph
                 }
             }
 
-            //foreach (var item in edges)
-            //{
-            //    Console.WriteLine($"{item.Key.Key} {item.Key.Value} {item.Value}");
-            //}
             return f.LinkList();
         }
+
+
+        // IV.a.16 Вывести все кратчайшие пути до вершины u.
+        public List<string> TaskIVa_16(string u)
+        {
+            List<string> result = new List<string>();
+
+            Dictionary<string, string> ways = Reversed().Dijkstr(u);
+
+            foreach (var item in ways.Keys)
+            {
+                StringBuilder way = new StringBuilder(item);
+                string now = item;
+                while (ways[now] != u)
+                {
+                    way.Append($" {ways[now]}");
+                    now = ways[now];
+                }
+                way.Append($" {u}");
+
+                result.Add(way.ToString());
+            }
+
+            //foreach (var item in Reversed().Dijkstr(u))
+            //{
+            //    Console.WriteLine($"{item.Key} {item.Value}");
+            //}
+
+            return result;
+        }
+
+        public Dictionary<string, string> Dijkstr(string v)
+        {
+            // создание и инициализация словаря посещенных вершин для обходов в глубину
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            foreach (var item in vertices.Keys)
+            {
+                visited.Add(item, false);
+            }
+
+            visited[v] = true; // помечаем вершину v как просмотренную
+            //создаем матрицу с
+            Dictionary<string, Dictionary<string, int>> c = new Dictionary<string, Dictionary<string, int>>();
+            foreach (var i in vertices.Keys)
+            {
+                c.Add(i, new Dictionary<string, int>());
+
+                // заполнение несмежных вершин
+                foreach (var j in NotAdjacent(i))
+                {
+                    c[i].Add(j, int.MaxValue);
+                }
+
+                //заполнение смежных вершин
+                foreach (var j in vertices[i])
+                {
+                    c[i].Add(j.connectedVertex, j.weight);
+                }
+            }
+
+            //создаем матрицы d и p
+            Dictionary<string, long> d = new Dictionary<string, long>();
+            //long[] d = new long[Size];
+            Dictionary<string, string> p = new Dictionary<string, string>();
+            //p = new int[Size];
+            foreach(var u in vertices.Keys)
+            //for (int u = 0; u < Size; u++)
+            {
+                if (u != v)
+                {
+                    d[u] = c[v][u];
+                    p[u] = v;
+                }
+            }
+
+            foreach(var i in vertices.Keys)
+            //for (int i = 0; i < Size - 1; i++) // на каждом шаге цикла
+            {
+                // выбираем из множества V\S такую вершину w, что D[w] минимально
+                long min = int.MaxValue;
+                string w = "";
+                foreach(var u in vertices.Keys)
+                //for (int u = 0; u < Size; u++)
+                {
+                    if (!visited[u] && min > d[u])
+                    {
+                        min = d[u];
+                        w = u;
+                    }
+                }
+
+                if (w == "") break;
+
+                visited[w] = true; //помещаем w в множество S
+                                //для каждой вершины из множества V\S определяем кратчайший путь от
+                                // источника до этой вершины
+                foreach(var u in vertices.Keys)
+                //for (int u = 0; u < Size; u++)
+                {
+                    long distance = d[w] + c[w][u];
+                    if (!visited[u] && d[u] > distance)
+                    {
+                        d[u] = distance;
+                        p[u] = w;
+                    }
+                }
+            }
+            return p; //в качестве результата возвращаем массив кратчайших путей для
+        } //заданного источника
 
     }
 }
