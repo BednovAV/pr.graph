@@ -527,7 +527,7 @@ namespace pr.graph
         // III.Краскал Дан взвешенный неориентированный граф из N вершин и M ребер. Требуется найти в нем каркас минимального веса.
 
         public List<string> Kruskal()
-        {
+        {// добавить 
             // словарь ребер
             Dictionary<KeyValuePair<string, string>, int> edges = new Dictionary<KeyValuePair<string, string>, int>();
             foreach (var ver in vertices.Keys)
