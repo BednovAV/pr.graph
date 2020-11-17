@@ -580,6 +580,7 @@ namespace pr.graph
         }
 
 
+
         // IV.a.16 Вывести все кратчайшие пути до вершины u.
         public List<string> TaskIVa_16(string u)
         {
@@ -640,11 +641,9 @@ namespace pr.graph
 
             //создаем матрицы d и p
             Dictionary<string, long> d = new Dictionary<string, long>();
-            //long[] d = new long[Size];
             Dictionary<string, string> p = new Dictionary<string, string>();
-            //p = new int[Size];
+
             foreach(var u in vertices.Keys)
-            //for (int u = 0; u < Size; u++)
             {
                 if (u != v)
                 {
@@ -654,13 +653,11 @@ namespace pr.graph
             }
 
             foreach(var i in vertices.Keys)
-            //for (int i = 0; i < Size - 1; i++) // на каждом шаге цикла
             {
                 // выбираем из множества V\S такую вершину w, что D[w] минимально
                 long min = int.MaxValue;
                 string w = "";
                 foreach(var u in vertices.Keys)
-                //for (int u = 0; u < Size; u++)
                 {
                     if (!visited[u] && min > d[u])
                     {
@@ -675,7 +672,6 @@ namespace pr.graph
                                 //для каждой вершины из множества V\S определяем кратчайший путь от
                                 // источника до этой вершины
                 foreach(var u in vertices.Keys)
-                //for (int u = 0; u < Size; u++)
                 {
                     long distance = d[w] + c[w][u];
                     if (!visited[u] && d[u] > distance)
@@ -685,7 +681,7 @@ namespace pr.graph
                     }
                 }
             }
-            return p; //в качестве результата возвращаем массив кратчайших путей для
+            return p; //в качестве результата возвращаем словарь кратчайших путей для
         } //заданного источника
 
     }
