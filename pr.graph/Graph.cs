@@ -26,6 +26,7 @@ namespace pr.graph
             }
         }
 
+
         // словарь вершин, ключ - название вершины, значение - список смежных вершин 
         private Dictionary<string, HashSet<Link>> vertices;
         // флаг отвечающий за ориентированность графа
