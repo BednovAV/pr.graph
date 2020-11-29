@@ -485,45 +485,7 @@ namespace pr.graph
             return result;
         }
 
-        // алгоритм Флойда-Уоршелла по нахождению кратчайших расстояний (по количеству ребер) в графе
-        private Dictionary<string, Dictionary<string, int>> Floyd()
-        {
-            // создание и заполнение таблицы смежности графа
-            Dictionary<string, Dictionary<string, int>> g = new Dictionary<string, Dictionary<string, int>>();
-            foreach (var i in vertices.Keys)
-            {
-                g.Add(i, new Dictionary<string, int>());
-
-                // заполнение несмежных вершин
-                foreach (var j in NotAdjacent(i))
-                {
-                    g[i].Add(j, 1000);
-                }
-
-                //заполнение смежных вершин
-                foreach (var j in vertices[i])
-                {
-                    g[i].Add(j.connectedVertex, 1);
-                }              
-            }
-
-            // вычисление гратчайших расстояний
-            foreach (var i in vertices.Keys)
-            {
-                foreach (var j in vertices.Keys)
-                {
-                    foreach (var k in vertices.Keys)
-                    {
-                        if (g[j][k] > g[j][i] + g[i][k])
-                        {
-                            g[j][k] = g[j][i] + g[i][k];
-                        }
-                    }
-                }
-            }
-
-            return g;
-        }
+        
 
 
         // III.Краскал Дан взвешенный неориентированный граф из N вершин и M ребер. Требуется найти в нем каркас минимального веса.
@@ -644,7 +606,7 @@ namespace pr.graph
             Dictionary<string, long> d = new Dictionary<string, long>();
             Dictionary<string, string> p = new Dictionary<string, string>();
 
-            foreach(var u in vertices.Keys)
+            foreach (var u in vertices.Keys)
             {
                 if (u != v)
                 {
@@ -653,12 +615,12 @@ namespace pr.graph
                 }
             }
 
-            foreach(var i in vertices.Keys)
+            foreach (var i in vertices.Keys)
             {
                 // выбираем из множества V\S такую вершину w, что D[w] минимально
                 long min = int.MaxValue;
                 string w = "";
-                foreach(var u in vertices.Keys)
+                foreach (var u in vertices.Keys)
                 {
                     if (!visited[u] && min > d[u])
                     {
@@ -670,9 +632,9 @@ namespace pr.graph
                 if (w == "") break;
 
                 visited[w] = true; //помещаем w в множество S
-                                //для каждой вершины из множества V\S определяем кратчайший путь от
-                                // источника до этой вершины
-                foreach(var u in vertices.Keys)
+                                   //для каждой вершины из множества V\S определяем кратчайший путь от
+                                   // источника до этой вершины
+                foreach (var u in vertices.Keys)
                 {
                     long distance = d[w] + c[w][u];
                     if (!visited[u] && d[u] > distance)
@@ -682,8 +644,90 @@ namespace pr.graph
                     }
                 }
             }
-            return p; //в качестве результата возвращаем словарь кратчайших путей для
-        } //заданного источника
+
+            //в качестве результата возвращаем словарь кратчайших путей для
+            //заданного источника
+            return p;
+        }
+
+
+        //Вывести цикл отрицательного веса, если он есть
+        public string TaskIVc_18()
+        {
+            // применяем алгоритм Флойда к графу
+            Dictionary<string, Dictionary<string, string>> pathes;
+            Dictionary<string, Dictionary<string, int>> dists = Floyd(out pathes);
+
+            // если на главной диагонали получившейся матрицы есть отрицательные длины,
+            // то значит граф содержит цикл отрицательного веса
+            string negVer = "";
+            foreach (var i in dists.Keys)
+            {
+                if (dists[i][i] < 0)
+                {
+                    negVer = i;
+                    break;
+                }
+            }
+            if (negVer == "") return "Циклы отрицательного веса отсутствуют";
+
+            // находим цикл по матрице путей
+            StringBuilder way = new StringBuilder(negVer);
+            string now = negVer;
+            while (pathes[now][negVer] != negVer)
+            {
+                way.Append($" {pathes[now][negVer]}");
+                now = pathes[now][negVer];
+            }
+            way.Append($" {pathes[now][negVer]}");
+
+            return way.ToString();
+        }
+
+        // алгоритм Флойда-Уоршелла по нахождению кратчайших расстояний (по количеству ребер) в графе
+        private Dictionary<string, Dictionary<string, int>> Floyd(out Dictionary<string, Dictionary<string, string>> pathes)
+        {
+            // создание и заполнение таблицы смежности графа
+            Dictionary<string, Dictionary<string, int>> g = new Dictionary<string, Dictionary<string, int>>();
+            pathes = new Dictionary<string, Dictionary<string, string>>();
+            foreach (var i in vertices.Keys)
+            {
+                g.Add(i, new Dictionary<string, int>());
+                pathes.Add(i, new Dictionary<string, string>());
+
+                // заполнение несмежных вершин
+                foreach (var j in NotAdjacent(i))
+                {
+                    g[i].Add(j, int.MaxValue / 2);
+                    pathes[i].Add(j, "no way");
+                }
+
+                //заполнение смежных вершин
+                foreach (var j in vertices[i])
+                {
+                    g[i].Add(j.connectedVertex, j.weight);
+                    pathes[i].Add(j.connectedVertex, j.connectedVertex);
+                }
+            }
+
+            // вычисление гратчайших расстояний
+            foreach (var i in vertices.Keys)
+            {
+                foreach (var j in vertices.Keys)
+                {
+                    foreach (var k in vertices.Keys)
+                    {
+                        if (g[j][k] > g[j][i] + g[i][k])
+                        {
+                            g[j][k] = g[j][i] + g[i][k];
+                            pathes[j][k] = pathes[j][i];
+                        }
+                    }
+                }
+            }
+
+            return g;
+        }
 
     }
 }

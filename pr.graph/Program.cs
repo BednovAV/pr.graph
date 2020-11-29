@@ -84,6 +84,8 @@ namespace pr.graph
             Console.WriteLine("\t11. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.");
             Console.WriteLine("\t12. Найти каркас минимального веса");
             Console.WriteLine("\t13. Вывести все кратчайшие пути до вершины u.");
+            Console.WriteLine("\t14. ");
+            Console.WriteLine("\t15. Вывести цикл отрицательного веса, если он есть.");
 
 
             Console.WriteLine("\t0. Выйти");
@@ -325,6 +327,18 @@ namespace pr.graph
                                 Console.WriteLine($"\t{item}");
                             }
                             Console.WriteLine();
+                            break;
+                        }
+                    // 
+                    case "14":
+                        {
+                         
+                            break;
+                        }
+                    //Вывести цикл отрицательного веса, если он есть
+                    case "15":
+                        {
+                            Console.WriteLine(g.TaskIVc_18());
                             break;
                         }
                     default:
