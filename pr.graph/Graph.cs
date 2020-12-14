@@ -869,5 +869,105 @@ namespace pr.graph
             return g;
         }
 
+        bool Bfs(Dictionary<string, Dictionary<string, int>> rGraph, string s, string t, Dictionary<string, string> parent)
+        {
+            // Create a visited array and mark all vertices as not visited 
+            Dictionary<string, bool> visited = new Dictionary<string, bool>();
+            foreach (var item in vertices.Keys)
+            {
+                visited.Add(item, false);
+            }
+
+            // Create a queue, enqueue source vertex and mark source vertex 
+            // as visited 
+            Queue<string> q = new Queue<string>();
+            q.Enqueue(s);
+            visited[s] = true;
+
+            //!!!
+            parent[s] = "";
+
+            // Standard BFS Loop 
+            while (q.Count != 0)
+            {
+                string u = q.Dequeue();
+
+                //for (int v = 0; v < V; v++)
+                foreach (var v in rGraph.Keys)
+                {
+                    if (visited[v] == false && rGraph[u][v] > 0)
+                    {
+                        q.Enqueue(v);
+                        parent[v] = u;
+                        visited[v] = true;
+                    }
+                }
+            }
+
+            // If we reached sink in BFS starting from source, then return 
+            // true, else false 
+            return (visited[t] == true);
+        }
+
+        // Returns the maximum flow from s to t in the given graph 
+        public int FordFulkerson(string s = "s", string t = "t")
+        {
+            string u, v;
+
+            //создаем матрицу rGraph
+            Dictionary<string, Dictionary<string, int>> rGraph = new Dictionary<string, Dictionary<string, int>>();
+            foreach (var i in vertices.Keys)
+            {
+                rGraph.Add(i, new Dictionary<string, int>());
+
+                // заполнение несмежных вершин
+                foreach (var j in NotAdjacent(i))
+                {
+                    rGraph[i].Add(j, 0);
+                }
+
+                //заполнение смежных вершин
+                foreach (var j in vertices[i])
+                {
+                    rGraph[i].Add(j.connectedVertex, j.weight);
+                }
+            }
+            // Create a residual graph and fill the residual graph with 
+            // given capacities in the original graph as residual capacities 
+            // in residual graph 
+            Dictionary<string, string> parent = new Dictionary<string, string>();  // This array is filled by BFS and to store path 
+
+            int max_flow = 0;  // There is no flow initially 
+
+            // Augment the flow while tere is path from source to sink 
+            while (Bfs(rGraph, s, t, parent))
+            {
+                // Find minimum residual capacity of the edges along the 
+                // path filled by BFS. Or we can say find the maximum flow 
+                // through the path found. 
+                int path_flow = int.MaxValue;
+                for (v = t; v != s; v = parent[v])
+                {
+                    u = parent[v];
+                    path_flow = Math.Min(path_flow, rGraph[u][v]);
+                }
+
+                // update residual capacities of the edges and reverse edges 
+                // along the path 
+                for (v = t; v != s; v = parent[v])
+                {
+                    u = parent[v];
+                    rGraph[u][v] -= path_flow;
+                    rGraph[v][u] += path_flow;
+                }
+
+                // Add path flow to overall flow 
+                max_flow += path_flow;
+            }
+
+            // Return the overall flow 
+            return max_flow;
+        }
+
     }
 }

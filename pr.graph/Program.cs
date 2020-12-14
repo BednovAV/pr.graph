@@ -86,6 +86,7 @@ namespace pr.graph
             Console.WriteLine("\t13. Вывести все кратчайшие пути до вершины u.");
             Console.WriteLine("\t14. *Найти k кратчайших путей между вершинами u и v");
             Console.WriteLine("\t15. Вывести цикл отрицательного веса, если он есть.");
+            Console.WriteLine("\t16. максимальный поток");
 
 
             Console.WriteLine("\t0. Выйти");
@@ -356,6 +357,11 @@ namespace pr.graph
                     case "15":
                         {
                             Console.WriteLine(g.TaskIVc_18());
+                            break;
+                        }
+                    case "16":
+                        {
+                            Console.WriteLine(g.FordFulkerson());
                             break;
                         }
                     default:
