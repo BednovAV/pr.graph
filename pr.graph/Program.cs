@@ -84,7 +84,7 @@ namespace pr.graph
             Console.WriteLine("\t11. Вывести длины кратчайших (по числу рёбер) путей от всех вершин до u.");
             Console.WriteLine("\t12. Найти каркас минимального веса");
             Console.WriteLine("\t13. Вывести все кратчайшие пути до вершины u.");
-            Console.WriteLine("\t14. ");
+            Console.WriteLine("\t14. *Найти k кратчайших путей между вершинами u и v");
             Console.WriteLine("\t15. Вывести цикл отрицательного веса, если он есть.");
 
 
@@ -310,7 +310,14 @@ namespace pr.graph
                     // Найти каркас минимального веса
                     case "12":
                         {
-                            Console.WriteLine("Каркас минимального веса:");
+                            if (g.Kosaraju().Count != 1)
+                            {
+                                Console.WriteLine("Леса минимального веса: ");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Дерево минимального веса:");
+                            }
                             foreach (var item in g.Kruskal())
                             {
                                 Console.WriteLine($"\t{item}");
@@ -329,10 +336,20 @@ namespace pr.graph
                             Console.WriteLine();
                             break;
                         }
-                    // 
+                    // * Найти k кратчайших путей между вершинами u и v
                     case "14":
                         {
-                         
+                            Console.Write("u: ");
+                            string u = Console.ReadLine();
+                            Console.Write("v: ");
+                            string v = Console.ReadLine();
+                            Console.Write("k: ");
+                            int k = int.Parse(Console.ReadLine());
+                            g.ShortPathes(u, v, k);
+                            foreach (var item in g.ShortPathes(u, v, k))
+                            {
+                                Console.WriteLine($"{item.Key}: {item.Value}");
+                            }
                             break;
                         }
                     //Вывести цикл отрицательного веса, если он есть

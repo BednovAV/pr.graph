@@ -490,7 +490,8 @@ namespace pr.graph
 
         // III.Краскал Дан взвешенный неориентированный граф из N вершин и M ребер. Требуется найти в нем каркас минимального веса.
         public List<string> Kruskal()
-        {// добавить лес дерево
+        {
+
             // словарь ребер
             Dictionary<KeyValuePair<string, string>, int> edges = new Dictionary<KeyValuePair<string, string>, int>();
             foreach (var ver in vertices.Keys)
@@ -650,8 +651,133 @@ namespace pr.graph
             return p;
         }
 
+        //IV.b.22* Найти k кратчайших путей между вершинами u и v.
+        public List<KeyValuePair<string, int>> ShortPathes(string u, string v, int k)
+        {
+            // список кратчайший путей
+            List<YenPath> pathes = new List<YenPath>();
 
-        //Вывести цикл отрицательного веса, если он есть
+            // применяем алгоритм Флойда к графу
+            Dictionary<string, Dictionary<string, string>> path;
+            Dictionary<string, Dictionary<string, int>> dist = Floyd(out path);
+            pathes.Add(new YenPath(ExtractPath(path, u, v), dist[u][v], new List<KeyValuePair<string, string>>()));
+
+            Yen(pathes, u, v, k);
+            pathes = new List<YenPath>(pathes.Distinct());
+            pathes.Sort();
+
+            List<KeyValuePair<string, int>> result = new List<KeyValuePair<string, int>>();
+            foreach (var item in pathes.GetRange(0, k))
+            {
+                result.Add(new KeyValuePair<string, int>(item.path, item.dist));
+            }
+
+            //foreach (var item in pathes)
+            //{
+            //    Console.Write($"{item.path}, {item.dist}, ");
+            //    foreach (var m in item.missing)
+            //    {
+            //        Console.Write($"[{m.Key}, {m.Value}]");
+            //    }
+            //    Console.WriteLine();
+            //}
+            //Console.WriteLine($"{ExtractPath(path, a, b)} {dist[a][b]}");
+            return result;
+        }
+        struct YenPath: IComparable<YenPath>, IEquatable<YenPath>
+        {
+            public string path;
+            public int dist;
+            public List<KeyValuePair<string, string>> missing;
+            public YenPath(string path, int dist, List<KeyValuePair<string, string>> missing)
+            {
+                this.path = path;
+                this.dist = dist;
+                this.missing = missing;
+            }
+
+            public int CompareTo(YenPath other)
+            {
+                return dist.CompareTo(other.dist);
+            }
+
+            public bool Equals(YenPath other)
+            {
+                if (path == other.path)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private void Yen(List<YenPath> pathes, string u, string v, int k)
+        {
+            while (pathes.Distinct().Count() < k)
+            {
+                int maxMiss = 0;
+                foreach (var item in pathes)
+                {
+                    if(item.missing.Count > maxMiss)
+                    {
+                        maxMiss = item.missing.Count;
+                    }
+                }
+
+                List<YenPath> nowPathes = pathes.FindAll(e => e.missing.Count == maxMiss);
+
+                foreach (var item in nowPathes)
+                {
+                    string[] path = item.path.Split(' ');
+                    for (int i = 0; i < path.Length - 1; i++)
+                    {
+                        List<KeyValuePair<string, string>> newMissing = new List<KeyValuePair<string, string>>(item.missing);
+                        newMissing.Add(new KeyValuePair<string, string>(path[i], path[i + 1]));
+                        AddWayToList(pathes, newMissing, u, v);
+                    }
+                }
+            }
+        }
+
+        private void AddWayToList(List<YenPath> pathes, List<KeyValuePair<string, string>> missing, string u, string v)
+        {
+            Graph g = new Graph(this);
+            foreach (var e in missing)
+            {
+                g.RemoveLink(e.Key, e.Value);
+            }
+
+            // применяем алгоритм Флойда к графу
+            Dictionary<string, Dictionary<string, string>> path;
+            Dictionary<string, Dictionary<string, int>> dist = g.Floyd(out path);
+            if (path[u][v] != "no way")
+            {
+                YenPath yenPath = new YenPath(ExtractPath(path, u, v), dist[u][v], missing);
+                //if (!pathes.Contains(yenPath))
+                {
+                    pathes.Add(yenPath);
+                }
+            }
+        }
+
+        private string ExtractPath(Dictionary<string, Dictionary<string, string>> pathes, string u, string v)
+        {
+            string path = u;
+            string now = u;
+
+            while(pathes[now][v] != v)
+            {
+                path += $" {pathes[now][v]}";
+                now = pathes[now][v];
+            }
+            path += $" {v}";
+            return path;
+        }
+
+        //IV.c.18 Вывести цикл отрицательного веса, если он есть
         public string TaskIVc_18()
         {
             // применяем алгоритм Флойда к графу
@@ -678,8 +804,22 @@ namespace pr.graph
             {
                 way.Append($" {pathes[now][negVer]}");
                 now = pathes[now][negVer];
+                if (way.ToString().Contains($" {now} "))
+                {
+                    way = new StringBuilder(now);
+                    negVer = now;
+                }
             }
             way.Append($" {pathes[now][negVer]}");
+
+            //foreach (var v1 in vertices.Keys)
+            //{
+            //    foreach (var v2 in vertices.Keys)
+            //    {
+            //        Console.WriteLine($"Dist[{v1}][{v2}]{dists[v1][v2]}");
+            //        Console.WriteLine($"Path[{v1}][{v2}]{pathes[v1][v2]}");
+            //    }
+            //}
 
             return way.ToString();
         }
